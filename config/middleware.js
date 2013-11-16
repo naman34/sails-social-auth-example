@@ -6,7 +6,14 @@ var passport = require('passport')
 var verifyHandler = function (token, tokenSecret, profile, done) {
     process.nextTick(function () {
 
-        User.findOne({uid: profile.id}).done(function (err, user) {
+        User.findOne(
+                {
+                    or : [
+                            {uid: parseInt(profile.id)}, 
+                            {uid: profile.id}
+                        ]
+                }
+            ).done(function (err, user) {
             if (user) {
                 return done(null, user);
             } else {
@@ -46,7 +53,7 @@ module.exports = {
                 },
                 verifyHandler
             ));
-
+            
             passport.use(new GoogleStrategy({
                     clientID: 'YOUR_CLIENT_ID',
                     clientSecret: 'YOUR_CLIENT_SECRET',
